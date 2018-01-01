@@ -2,6 +2,7 @@ import json
 import re
 from helpers import aeshelper
 from objects import glob
+from common.ripple import userUtils
 
 #Use this so we dont blow up the machine
 regex_cache = {}
@@ -74,4 +75,11 @@ def sell(processes):
     return formatted_pl
 
 def eat(user_id, processes, detected):
+    if len(detected) > 0:
+        userUtils.restrict(user_id)
+        reason = " & ".join(detected)
+        if len(reason) > 86:
+            reason = "reasons..."
+        userUtils.appendNotes(user_id, "Restricted due to too {}".format(reason))
+
     glob.db.execute("INSERT INTO cakes(id, userid, processes, detected) VALUES (NULL,%s,%s,%s)", [user_id, json.dumps(processes), json.dumps(detected)])
