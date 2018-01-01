@@ -3,7 +3,6 @@ from helpers import aeshelper
 from objects import glob
 
 def bake(submit, score):
-    #glob.db.execute("") #Get process list and post it into cakes table ;3
     detected = []
 
     if "osuver" in submit.request.arguments:
@@ -17,7 +16,7 @@ def bake(submit, score):
         detected.append("Unable to decrypt process list (Hacked)")
         eat(score.playerUserID, "Missing!", detected)
         return
-    
+
     pl = sell(pl)
 
     #Search thru known hacks list
@@ -46,9 +45,9 @@ def sell(processes):
                 file_title = h[1][:-1]
 
             formatted_pl.append({"hash":file_hash, "path":file_path,
-                                "file":file_name, "title":file_title})
+                                 "file":file_name, "title":file_title})
         except:
-            print("I dun goofed: {}".format(p))
+            continue
 
     return formatted_pl
 
