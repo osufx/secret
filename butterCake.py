@@ -1,6 +1,19 @@
 import json
+import re
 from helpers import aeshelper
 from objects import glob
+
+#Use this so we dont blow up the machine
+regex_cache = {}
+sugar = None
+
+#Magic config
+with open("secret/sugar.json", "r") as f:
+    sugar = json.load(f)
+
+#Cache regex searches
+for x in sugar["title"].keys():
+    regex_cache[x] = re.compile(x)
 
 def bake(submit, score):
     detected = []
@@ -20,7 +33,16 @@ def bake(submit, score):
     pl = sell(pl)
 
     #Search thru known hacks list
-    #Do it yourself :P
+    for p in pl:
+        if p["hash"] is not None:
+            for x in sugar["hash"].keys():
+                if x == p["hash"]:
+                    detected.append(sugar["hash"][x])
+
+        if p["title"] is not None:
+            for x in regex_cache.keys():
+                if regex_cache[x].search(p["title"]) is not None:
+                    detected.append(sugar["title"][x])
 
     eat(score.playerUserID, pl, detected)
 
