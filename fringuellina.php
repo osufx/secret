@@ -25,5 +25,17 @@ class Fringuellina {
     public static function RAPCakesListButton(){
 
     }
+
+    public static function ToggleCake(){
+
+    }
+
+	public static function RemoveCake(){
+
+    }
+
+    public static function EditCake(){
+
+    }
 }
 ?>
