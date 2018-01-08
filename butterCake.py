@@ -102,7 +102,7 @@ def eat(user_id, processes, detected):
     if len(detected) > 0:
         if do_restrict:
             userUtils.restrict(user_id)
-        reason = " & ".join(detected)
+        reason = " & ".join([x["tag"] for x in detected])
         if len(reason) > 86:
             reason = "reasons..."
         userUtils.appendNotes(user_id, "Restricted due to too {}".format(reason))
