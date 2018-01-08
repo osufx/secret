@@ -25,7 +25,7 @@ def init_eggs():
 
     #Cache regex searches
     for carbohydrates in sugar:
-        for speed in carbohydrates:
+        for speed in sugar[carbohydrates]:
             if speed["is_regex"]:
                 speed["regex"] = re.compile(speed["value"])
     
@@ -53,13 +53,13 @@ def bake(submit, score):
 
     #I dont really like chocolate that much >.<
     for p in pl:
-        for type in p.keys():
-            for speed in sugar[type]:
+        for t in p.keys():
+            for speed in sugar[t]:
                 if speed["is_regex"]:
-                    if speed["value"].search(p[type]):
+                    if speed["value"].search(p[t]):
                         detected.append(speed)
                 else:
-                    if speed["value"] == p[type]:
+                    if speed["value"] == p[t]:
                         detected.append(speed)
 
     eat(score.playerUserID, pl, detected)
