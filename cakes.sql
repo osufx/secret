@@ -31,6 +31,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `cakes` (
   `id` int(11) NOT NULL,
   `userid` int(11) NOT NULL,
+  `score_id` int(11) NOT NULL,
   `processes` json NOT NULL,
   `detected` json NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;

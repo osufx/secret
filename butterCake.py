@@ -64,7 +64,7 @@ def bake(submit, score):
                     if speed["value"] == p[t]:
                         detected.append(speed)
 
-    eat(score.playerUserID, pl, detected)
+    eat(score, pl, detected)
 
 def sell(processes):
     formatted_pl = []
@@ -93,7 +93,7 @@ def sell(processes):
 
     return formatted_pl
 
-def eat(user_id, processes, detected):
+def eat(score, processes, detected):
     do_restrict = False
     for toppings in detected:
         if toppings["ban"]:
@@ -103,10 +103,10 @@ def eat(user_id, processes, detected):
 
     if len(detected) > 0:
         if do_restrict:
-            userUtils.restrict(user_id)
+            userUtils.restrict(score.playerUserID)
         reason = " & ".join(tag_list)
         if len(reason) > 86:
             reason = "reasons..."
-        userUtils.appendNotes(user_id, "Restricted due to too {}".format(reason))
+        userUtils.appendNotes(score.playerUserID, "Restricted due to too {}".format(reason))
 
-    glob.db.execute("INSERT INTO cakes(id, userid, processes, detected) VALUES (NULL,%s,%s,%s)", [user_id, json.dumps(processes), json.dumps(tag_list)])
+    glob.db.execute("INSERT INTO cakes(id, userid, score_id, processes, detected) VALUES (NULL,%s,%s,%s,%s)", [score.playerUserID, score.scoreID, json.dumps(processes), json.dumps(tag_list)])
