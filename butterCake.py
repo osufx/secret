@@ -98,13 +98,15 @@ def eat(user_id, processes, detected):
     for toppings in detected:
         if toppings["ban"]:
             do_restrict = True
-        
+
+    tag_list = [x["tag"] for x in detected]
+
     if len(detected) > 0:
         if do_restrict:
             userUtils.restrict(user_id)
-        reason = " & ".join([x["tag"] for x in detected])
+        reason = " & ".join(tag_list)
         if len(reason) > 86:
             reason = "reasons..."
         userUtils.appendNotes(user_id, "Restricted due to too {}".format(reason))
 
-    glob.db.execute("INSERT INTO cakes(id, userid, processes, detected) VALUES (NULL,%s,%s,%s)", [user_id, json.dumps(processes), json.dumps(detected)])
+    glob.db.execute("INSERT INTO cakes(id, userid, processes, detected) VALUES (NULL,%s,%s,%s)", [user_id, json.dumps(processes), json.dumps(tag_list)])
