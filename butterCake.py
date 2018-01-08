@@ -54,6 +54,8 @@ def bake(submit, score):
     #I dont really like chocolate that much >.<
     for p in pl:
         for t in p.keys():
+            if p[t] is None:
+                continue
             for speed in sugar[t]:
                 if speed["is_regex"]:
                     if speed["regex"].search(p[t]):
