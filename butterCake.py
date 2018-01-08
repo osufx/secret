@@ -16,7 +16,7 @@ initialized_eggs = False
 
 #Eggs
 def init_eggs():
-    eggs = glob.db.fetch("SELECT * FROM eggs")
+    eggs = glob.db.fetchAll("SELECT * FROM eggs", [])
     if eggs is not None:
         for egg in eggs:
             if egg["type"] not in ["hash", "path", "file", "title"]:
