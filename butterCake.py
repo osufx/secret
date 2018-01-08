@@ -12,21 +12,29 @@ sugar = {
     "title": []
 }
 
-#Eggs
-eggs = glob.db.fetch("SELECT * FROM eggs", [])
-if eggs is not None:
-    for egg in eggs:
-        if egg["type"] not in ["hash", "path", "file", "title"]:
-            continue
-        sugar[egg["type"]].append(egg)
+initialized_eggs = False
 
-#Cache regex searches
-for carbohydrates in sugar:
-    for speed in carbohydrates:
-        if speed["is_regex"]:
-            speed["regex"] = re.compile(speed["value"])
+#Eggs
+def init_eggs():
+    eggs = glob.db.fetch("SELECT * FROM eggs")
+    if eggs is not None:
+        for egg in eggs:
+            if egg["type"] not in ["hash", "path", "file", "title"]:
+                continue
+            sugar[egg["type"]].append(egg)
+
+    #Cache regex searches
+    for carbohydrates in sugar:
+        for speed in carbohydrates:
+            if speed["is_regex"]:
+                speed["regex"] = re.compile(speed["value"])
+    
+    initialized_eggs = True
 
 def bake(submit, score):
+    if not initialized_eggs:
+        init_eggs()
+
     detected = []
 
     if "osuver" in submit.request.arguments:
