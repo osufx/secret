@@ -4,17 +4,27 @@ from helpers import aeshelper
 from objects import glob
 from common.ripple import userUtils
 
-#Use this so we dont blow up the machine
-regex_cache = {}
-sugar = None
+#Cornflakes is nice when 90% is sugar
+sugar = {
+    "hash": [],
+    "path": [],
+    "file": [],
+    "title": []
+}
 
-#Magic config
-with open("secret/sugar.json", "r") as f:
-    sugar = json.load(f)
+#Eggs
+eggs = glob.db.fetch("SELECT * FROM eggs")
+if eggs is not None:
+    for egg in eggs:
+        if egg["type"] not in ["hash", "path", "file", "title"]:
+            continue
+        sugar[egg["type"]].append(egg)
 
 #Cache regex searches
-for x in sugar["title"].keys():
-    regex_cache[x] = re.compile(x)
+for carbohydrates in sugar:
+    for speed in carbohydrates:
+        if speed["is_regex"]:
+            speed["regex"] = re.compile(speed["value"])
 
 def bake(submit, score):
     detected = []
@@ -33,17 +43,16 @@ def bake(submit, score):
 
     pl = sell(pl)
 
-    #Search thru known hacks list
+    #I dont really like chocolate that much >.<
     for p in pl:
-        if p["hash"] is not None:
-            for x in sugar["hash"].keys():
-                if x == p["hash"]:
-                    detected.append(sugar["hash"][x])
-
-        if p["title"] is not None:
-            for x in regex_cache.keys():
-                if regex_cache[x].search(p["title"]) is not None:
-                    detected.append(sugar["title"][x])
+        for type in p.keys():
+            for speed in sugar[type]:
+                if speed["is_regex"]:
+                    if speed["value"].search(p[type]):
+                        detected.append(speed)
+                else:
+                    if speed["value"] == p[type]:
+                        detected.append(speed)
 
     eat(score.playerUserID, pl, detected)
 
@@ -75,8 +84,14 @@ def sell(processes):
     return formatted_pl
 
 def eat(user_id, processes, detected):
+    do_restrict = False
+    for toppings in detected:
+        if toppings["ban"]:
+            do_restrict = True
+        
     if len(detected) > 0:
-        userUtils.restrict(user_id)
+        if do_restrict:
+            userUtils.restrict(user_id)
         reason = " & ".join(detected)
         if len(reason) > 86:
             reason = "reasons..."
