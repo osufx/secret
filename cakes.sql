@@ -35,6 +35,15 @@ CREATE TABLE `cakes` (
   `detected` json NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+CREATE TABLE `eggs` (
+  `id` int(11) NOT NULL,
+  `type` enum('hash','path','file','title') NOT NULL DEFAULT 'hash',
+  `value` varchar(128) NOT NULL,
+  `tag` varchar(128) NOT NULL,
+  `ban` tinyint(1) NOT NULL DEFAULT '0',
+  `is_regex` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 --
 -- Indexes for dumped tables
 --
@@ -43,6 +52,9 @@ CREATE TABLE `cakes` (
 -- Indexes for table `cakes`
 --
 ALTER TABLE `cakes`
+  ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `eggs`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -54,6 +66,10 @@ ALTER TABLE `cakes`
 --
 ALTER TABLE `cakes`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `eggs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
