@@ -4,6 +4,8 @@ from helpers import aeshelper
 from objects import glob
 from common.ripple import userUtils
 
+from . import ice_coffee
+
 #Cornflakes is nice when 90% is sugar
 sugar = {
     "hash": [],
@@ -28,43 +30,47 @@ def init_eggs():
         for speed in sugar[carbohydrates]:
             if speed["is_regex"]:
                 speed["regex"] = re.compile(speed["value"])
-    
+
     initialized_eggs = True
 
+#Since this is still being worked on everything is in a try catch
 def bake(submit, score):
-    if not initialized_eggs:
-        init_eggs()
-
-    detected = []
-
-    if "osuver" in submit.request.arguments:
-        aeskey = "osu!-scoreburgr---------{}".format(submit.get_argument("osuver"))
-    else:
-        aeskey = "h89f2-890h2h89b34g-h80g134n90133"
-    iv = submit.get_argument("iv")
     try:
-        pl = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("pl"), True).split("\r\n")
+        if not initialized_eggs:
+            init_eggs()
+
+        detected = []
+
+        if "osuver" in submit.request.arguments:
+            aeskey = "osu!-scoreburgr---------{}".format(submit.get_argument("osuver"))
+        else:
+            aeskey = "h89f2-890h2h89b34g-h80g134n90133"
+        iv = submit.get_argument("iv")
+        try:
+            pl = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("pl"), True).split("\r\n")
+        except:
+            detected.append("Unable to decrypt process list (Hacked)")
+            eat(score.playerUserID, "Missing!", detected)
+            return
+
+        pl = sell(pl)
+
+        #I dont really like chocolate that much >.<
+        for p in pl:
+            for t in p.keys():
+                if p[t] is None:
+                    continue
+                for speed in sugar[t]:
+                    if speed["is_regex"]:
+                        if speed["regex"].search(p[t]):
+                            detected.append(speed)
+                    else:
+                        if speed["value"] == p[t]:
+                            detected.append(speed)
+
+        eat(score, pl, detected)
     except:
-        detected.append("Unable to decrypt process list (Hacked)")
-        eat(score.playerUserID, "Missing!", detected)
-        return
-
-    pl = sell(pl)
-
-    #I dont really like chocolate that much >.<
-    for p in pl:
-        for t in p.keys():
-            if p[t] is None:
-                continue
-            for speed in sugar[t]:
-                if speed["is_regex"]:
-                    if speed["regex"].search(p[t]):
-                        detected.append(speed)
-                else:
-                    if speed["value"] == p[t]:
-                        detected.append(speed)
-
-    eat(score, pl, detected)
+        print("Oh no! The cake is on fire! Abort!")
 
 def sell(processes):
     formatted_pl = []
