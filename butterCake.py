@@ -6,6 +6,8 @@ from common.ripple import userUtils
 
 from . import ice_coffee
 
+IGNORE_HAX_FLAGS = ice_coffee.INCORRECT_MOD
+
 #Cornflakes is nice when 90% is sugar
 sugar = {
     "hash": [],
@@ -38,7 +40,7 @@ def bake(submit, score):
     try:
         if not initialized_eggs:
             init_eggs()
-
+        
         detected = []
 
         if "osuver" in submit.request.arguments:
@@ -46,6 +48,15 @@ def bake(submit, score):
         else:
             aeskey = "h89f2-890h2h89b34g-h80g134n90133"
         iv = submit.get_argument("iv")
+
+        try:
+            score_data = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("score"), True).split(":")
+            has_hax_flags = (len(score_data[17]) - len(score_data[17].strip())) & ~IGNORE_HAX_FLAGS
+            if has_hax_flags != 0:
+                print("They be haxing")
+        except:
+            print("oof")
+
         try:
             pl = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("pl"), True).split("\r\n")
         except:
