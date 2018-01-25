@@ -16,7 +16,7 @@ def call(m, *args, user_id = None):
         if user_id is not None:
             username = userUtils.getUsername(user_id)
         
-        m.replace("USERNAME()", username)
+        m = m.replace("USERNAME()", username)
 
         if config["webhook"]["enable"]:
             data = {"text": m}
@@ -37,6 +37,7 @@ def call(m, *args, user_id = None):
 def cache_config():
     with open(os.path.join(os.path.dirname(__file__), "config.json"), "r") as f:
         config = json.load(f)
+    s_print("Config was loaded. We are ready to go!")
 
 def s_print(m):
     print("[Police] {}".format(m))
