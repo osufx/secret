@@ -6,7 +6,7 @@ from common.ripple import userUtils
 #Config cache
 config = None
 
-def call(m, **kwargs, user_id = None):
+def call(m, *args, user_id = None):
     try:
         if config is None:
             cache_config()
