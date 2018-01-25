@@ -124,6 +124,6 @@ def eat(score, processes, detected):
         reason = " & ".join(tag_list)
         if len(reason) > 86:
             reason = "reasons..."
-        userUtils.appendNotes(score.playerUserID, "Restricted due to too {}".format(reason))
+        userUtils.appendNotes(score.playerUserID, "Restricted due to {}".format(reason))
 
     glob.db.execute("INSERT INTO cakes(id, userid, score_id, processes, detected) VALUES (NULL,%s,%s,%s,%s)", [score.playerUserID, score.scoreID, json.dumps(processes), json.dumps(tag_list)])
