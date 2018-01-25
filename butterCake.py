@@ -64,7 +64,6 @@ def bake(submit, score):
             pl = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("pl"), True).split("\r\n")
         except:
             police.call("Unable to decrypt process list from USERNAME()", user_id=score.playerUserID)
-)
             detected.append("Unable to decrypt process list (Hacked)")
             eat(score.playerUserID, "Missing!", detected)
             return
