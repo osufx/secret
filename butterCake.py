@@ -5,6 +5,7 @@ from objects import glob
 from common.ripple import userUtils
 
 from . import ice_coffee
+from . import police
 
 IGNORE_HAX_FLAGS = ice_coffee.INCORRECT_MOD
 
@@ -49,17 +50,21 @@ def bake(submit, score):
             aeskey = "h89f2-890h2h89b34g-h80g134n90133"
         iv = submit.get_argument("iv")
 
+        score_data = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("score"), True).split(":")
+        username = score_data[1].strip()
+
         try:
-            score_data = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("score"), True).split(":")
             has_hax_flags = (len(score_data[17]) - len(score_data[17].strip())) & ~IGNORE_HAX_FLAGS
             if has_hax_flags != 0:
-                print("They be haxing")
+                police.call("USERNAME() uploaded a score with {} flags.".format(score_data[17].strip()), user_id=score.playerUserID)
         except:
-            print("oof")
+            police.call("Unable to get hax flags from USERNAME()", user_id=score.playerUserID)
 
         try:
             pl = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("pl"), True).split("\r\n")
         except:
+            police.call("Unable to decrypt process list from USERNAME()", user_id=score.playerUserID)
+)
             detected.append("Unable to decrypt process list (Hacked)")
             eat(score.playerUserID, "Missing!", detected)
             return
@@ -81,7 +86,7 @@ def bake(submit, score):
 
         eat(score, pl, detected)
     except:
-        print("Oh no! The cake is on fire! Abort!")
+        police.call("Oh no! The cake is on fire! Abort!")
 
 def sell(processes):
     formatted_pl = []
@@ -125,5 +130,6 @@ def eat(score, processes, detected):
         if len(reason) > 86:
             reason = "reasons..."
         userUtils.appendNotes(score.playerUserID, "Restricted due to {}".format(reason))
+        police.call("USERNAME() was restricted due to {}".format(reason), user_id=score.playerUserID)
 
     glob.db.execute("INSERT INTO cakes(id, userid, score_id, processes, detected) VALUES (NULL,%s,%s,%s,%s)", [score.playerUserID, score.scoreID, json.dumps(processes), json.dumps(tag_list)])
