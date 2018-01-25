@@ -105,7 +105,7 @@ class Fringuellina {
     }
 
     public static function RAPCakesListButton(){
-
+		echo '<li><a href="index.php?p=130"><i class="fa fa-book"></i>	Cake recipes</a></li>';
     }
 
     public static function ToggleCake(){
