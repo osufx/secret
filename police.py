@@ -1,3 +1,4 @@
+import os
 import json
 import requests
 
@@ -34,7 +35,7 @@ def call(m, *args, user_id = None):
     s_print(m)
 
 def cache_config():
-    with open("config.json", "r") as f:
+    with open(os.path.join(os.path.dirname(__file__), "config.json"), "r") as f:
         config = json.load(f)
 
 def s_print(m):
