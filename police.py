@@ -28,7 +28,7 @@ def call(m, *args, user_id = None):
                 'Request to slack returned an error %s, the response is:\n%s'
                 % (response.status_code, response.text)
             )
-    except Exception, e:
+    except Exception as e:
         s_print("Unable to call police; {}".format(str(e)))
     
     s_print(m)
