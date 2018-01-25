@@ -56,7 +56,7 @@ def bake(submit, score):
         try:
             has_hax_flags = (len(score_data[17]) - len(score_data[17].strip())) & ~IGNORE_HAX_FLAGS
             if has_hax_flags != 0:
-                police.call("USERNAME() uploaded a score with {} flags.".format(score_data[17].strip()), user_id=score.playerUserID)
+                police.call("USERNAME() uploaded a score with {} flags.".format(len(score_data[17]) - len(score_data[17].strip())), user_id=score.playerUserID)
         except:
             police.call("Unable to get hax flags from USERNAME()", user_id=score.playerUserID)
 
