@@ -101,7 +101,7 @@ class Fringuellina {
     }
 
     public static function RAPButton(){
-
+		echo '<li><a href="index.php?p=128"><i class="fa fa-birthday-cake"></i>	Cakes</a></li>';
     }
 
     public static function RAPCakesListButton(){
