@@ -15,8 +15,7 @@ def call(m, *args, user_id = None):
         username = None
         if user_id is not None:
             username = userUtils.getUsername(user_id)
-        
-        m = m.replace("USERNAME()", username)
+            m = m.replace("USERNAME()", username)
 
         if config["webhook"]["enable"]:
             data = {"text": m}
