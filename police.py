@@ -4,12 +4,11 @@ import requests
 
 from common.ripple import userUtils
 
-#Config cache
-config = None
+from . import flavours
 
 def call(m, *args, user_id = None):
     try:
-        if config is None:
+        if flavours.config is None:
             cache_config()
 
         username = None
@@ -17,10 +16,10 @@ def call(m, *args, user_id = None):
             username = userUtils.getUsername(user_id)
             m = m.replace("USERNAME()", username)
 
-        if config["webhook"]["enable"]:
+        if flavours.config["webhook"]["enable"]:
             data = {"text": m}
             response = requests.post(
-                config["webhook"]["url"],
+                flavours.config["webhook"]["url"],
                 json=data
             )
             if response.status_code != 200:
@@ -35,7 +34,7 @@ def call(m, *args, user_id = None):
 
 def cache_config():
     with open(os.path.join(os.path.dirname(__file__), "config.json"), "r") as f:
-        config = json.load(f)
+        flavours.config = json.load(f)
     s_print("Config was loaded. We are ready to go!")
 
 def s_print(m):
