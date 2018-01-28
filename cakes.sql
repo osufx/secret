@@ -33,7 +33,8 @@ CREATE TABLE `cakes` (
   `userid` int(11) NOT NULL,
   `score_id` int(11) NOT NULL,
   `processes` json NOT NULL,
-  `detected` json NOT NULL
+  `detected` json NOT NULL,
+  `flags` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 CREATE TABLE `eggs` (
