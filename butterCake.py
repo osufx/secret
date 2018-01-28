@@ -38,54 +38,62 @@ def init_eggs():
 
 #Since this is still being worked on everything is in a try catch
 def bake(submit, score):
+    #try:
+    if not initialized_eggs:
+        init_eggs()
+    
+    detected = []
+    flags = 0
+
+    if "osuver" in submit.request.arguments:
+        aeskey = "osu!-scoreburgr---------{}".format(submit.get_argument("osuver"))
+    else:
+        aeskey = "h89f2-890h2h89b34g-h80g134n90133"
+    iv = submit.get_argument("iv")
+
+    score_data = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("score"), True).split(":")
+    username = score_data[1].strip()
+
+    print(score_data)
+    l = 0
+    for c in score_data:
+        print("{}:{}".format(l, c))
+        l += 1
     try:
-        if not initialized_eggs:
-            init_eggs()
-        
-        detected = []
-
-        if "osuver" in submit.request.arguments:
-            aeskey = "osu!-scoreburgr---------{}".format(submit.get_argument("osuver"))
-        else:
-            aeskey = "h89f2-890h2h89b34g-h80g134n90133"
-        iv = submit.get_argument("iv")
-
-        score_data = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("score"), True).split(":")
-        username = score_data[1].strip()
-
-        try:
-            has_hax_flags = (len(score_data[17]) - len(score_data[17].strip())) & ~IGNORE_HAX_FLAGS
-            if has_hax_flags != 0:
-                police.call("USERNAME() uploaded a score with {} flags.".format(len(score_data[17]) - len(score_data[17].strip())), user_id=score.playerUserID)
-        except:
-            police.call("Unable to get hax flags from USERNAME()", user_id=score.playerUserID)
-
-        try:
-            pl = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("pl"), True).split("\r\n")
-        except:
-            police.call("Unable to decrypt process list from USERNAME()", user_id=score.playerUserID)
-            detected.append("Unable to decrypt process list (Hacked)")
-            eat(score.playerUserID, "Missing!", detected)
-            return
-
-        pl = sell(pl)
-
-        #I dont really like chocolate that much >.<
-        for p in pl:
-            for t in p.keys():
-                if p[t] is None:
-                    continue
-                for speed in sugar[t]:
-                    if speed["is_regex"]:
-                        if speed["regex"].search(p[t]):
-                            detected.append(speed)
-                    else:
-                        if speed["value"] == p[t]:
-                            detected.append(speed)
-
-        eat(score, pl, detected)
+        #flags = len(score_data[17]) - len(score_data[17].strip()) #This doesnt work because memes... 
+        flags = score_data[17].count(' ')
+        has_hax_flags = flags & ~IGNORE_HAX_FLAGS
+        if has_hax_flags != 0:
+            police.call("USERNAME() uploaded a score with {} flags.".format(flags), user_id=score.playerUserID)
     except:
-        police.call("Oh no! The cake is on fire! Abort!")
+        police.call("Unable to get hax flags from USERNAME()", user_id=score.playerUserID)
+
+    try:
+        pl = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("pl"), True).split("\r\n")
+    except:
+        police.call("Unable to decrypt process list from USERNAME()", user_id=score.playerUserID)
+        detected.append("Unable to decrypt process list (Hacked)")
+        eat(score.playerUserID, "Missing!", detected, flags)
+        return
+
+    pl = sell(pl)
+
+    #I dont really like chocolate that much >.<
+    for p in pl:
+        for t in p.keys():
+            if p[t] is None:
+                continue
+            for speed in sugar[t]:
+                if speed["is_regex"]:
+                    if speed["regex"].search(p[t]):
+                        detected.append(speed)
+                else:
+                    if speed["value"] == p[t]:
+                        detected.append(speed)
+
+    eat(score, pl, detected, flags)
+    #except:
+        #police.call("Oh no! The cake is on fire! Abort!")
 
 def sell(processes):
     formatted_pl = []
@@ -114,7 +122,7 @@ def sell(processes):
 
     return formatted_pl
 
-def eat(score, processes, detected):
+def eat(score, processes, detected, flags):
     do_restrict = False
     for toppings in detected:
         if toppings["ban"]:
@@ -131,4 +139,4 @@ def eat(score, processes, detected):
         userUtils.appendNotes(score.playerUserID, "Restricted due to {}".format(reason))
         police.call("USERNAME() was restricted due to {}".format(reason), user_id=score.playerUserID)
 
-    glob.db.execute("INSERT INTO cakes(id, userid, score_id, processes, detected) VALUES (NULL,%s,%s,%s,%s)", [score.playerUserID, score.scoreID, json.dumps(processes), json.dumps(tag_list)])
+    glob.db.execute("INSERT INTO cakes(id, userid, score_id, processes, detected, flags) VALUES (NULL,%s,%s,%s,%s,%s)", [score.playerUserID, score.scoreID, json.dumps(processes), json.dumps(tag_list), flags])
