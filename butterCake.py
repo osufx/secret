@@ -83,7 +83,11 @@ def bake(submit, score):
             for t in p.keys():
                 if p[t] is None:
                     continue
+
                 for speed in sugar[t]:
+                    if speed in detected:
+                        continue
+
                     if speed["is_regex"]:
                         if speed["regex"].search(p[t]):
                             detected.append(speed)
