@@ -54,6 +54,12 @@ def bake(submit, score):
     score_data = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("score"), True).split(":")
     username = score_data[1].strip()
 
+    user_id = userUtils.getID(username)
+    restricted = userUtils.isRestricted(user_id)
+
+    if restricted == True: #We dont care about this since this person is already taken care off
+        return
+
     print(score_data)
     l = 0
     for c in score_data:
