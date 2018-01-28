@@ -135,12 +135,16 @@ def eat(score, processes, detected, flags):
     tag_list = [x["tag"] for x in detected]
 
     if len(detected) > 0:
-        if do_restrict:
-            userUtils.restrict(score.playerUserID)
         reason = " & ".join(tag_list)
         if len(reason) > 86:
             reason = "reasons..."
-        userUtils.appendNotes(score.playerUserID, "Restricted due to {}".format(reason))
-        police.call("USERNAME() was restricted due to {}".format(reason), user_id=score.playerUserID)
+
+        if do_restrict:
+            userUtils.restrict(score.playerUserID)
+            userUtils.appendNotes(score.playerUserID, "Restricted due to {}".format(reason))
+            police.call("USERNAME() was restricted due to {}".format(reason), user_id=score.playerUserID)
+        else:
+            userUtils.appendNotes(score.playerUserID, reason)
+            police.call("USERNAME() was flagged with {}".format(reason), user_id=score.playerUserID)
 
     glob.db.execute("INSERT INTO cakes(id, userid, score_id, processes, detected, flags) VALUES (NULL,%s,%s,%s,%s,%s)", [score.playerUserID, score.scoreID, json.dumps(processes), json.dumps(tag_list), flags])
