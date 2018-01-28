@@ -89,11 +89,24 @@ class Fringuellina {
     }
 
     public static function PrintInfoPage(){
-
+		
     }
 
     public static function PrintCakesSummary(){
-
+		// Print stuff
+		echo '<div id="wrapper">';
+		printAdminSidebar();
+		echo '<div id="page-content-wrapper">';
+		// Maintenance check
+		P::MaintenanceStuff();
+		// Print Success if set
+		if (isset($_GET['s']) && !empty($_GET['s'])) {
+			P::SuccessMessageStaccah($_GET['s']);
+		}
+		// Print Exception if set
+		if (isset($_GET['e']) && !empty($_GET['e'])) {
+			P::ExceptionMessageStaccah($_GET['e']);
+        }
     }
 
     public static function PrintEditCake(){
