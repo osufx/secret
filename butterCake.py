@@ -38,68 +38,62 @@ def init_eggs():
 
 #Since this is still being worked on everything is in a try catch
 def bake(submit, score):
-    #try:
-    if not initialized_eggs:
-        init_eggs()
-    
-    detected = []
-    flags = 0
-
-    if "osuver" in submit.request.arguments:
-        aeskey = "osu!-scoreburgr---------{}".format(submit.get_argument("osuver"))
-    else:
-        aeskey = "h89f2-890h2h89b34g-h80g134n90133"
-    iv = submit.get_argument("iv")
-
-    score_data = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("score"), True).split(":")
-    username = score_data[1].strip()
-
-    user_id = userUtils.getID(username)
-    restricted = userUtils.isRestricted(user_id)
-
-    if restricted == True: #We dont care about this since this person is already taken care off
-        return
-
-    print(score_data)
-    l = 0
-    for c in score_data:
-        print("{}:{}".format(l, c))
-        l += 1
     try:
-        #flags = len(score_data[17]) - len(score_data[17].strip()) #This doesnt work because memes... 
-        flags = score_data[17].count(' ')
-        has_hax_flags = flags & ~IGNORE_HAX_FLAGS
-        if has_hax_flags != 0:
-            police.call("USERNAME() uploaded a score with {} flags.".format(flags), user_id=score.playerUserID)
+        if not initialized_eggs:
+            init_eggs()
+        
+        detected = []
+        flags = 0
+
+        if "osuver" in submit.request.arguments:
+            aeskey = "osu!-scoreburgr---------{}".format(submit.get_argument("osuver"))
+        else:
+            aeskey = "h89f2-890h2h89b34g-h80g134n90133"
+        iv = submit.get_argument("iv")
+
+        score_data = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("score"), True).split(":")
+        username = score_data[1].strip()
+
+        user_id = userUtils.getID(username)
+        restricted = userUtils.isRestricted(user_id)
+
+        if restricted == True or user_id == 0: #We dont care about this since this person is already taken care off
+            return
+
+        try:
+            flags = score_data[17].count(' ')
+            has_hax_flags = flags & ~IGNORE_HAX_FLAGS
+            if has_hax_flags != 0:
+                police.call("USERNAME() uploaded a score with {} flags.".format(flags), user_id=user_id)
+        except:
+            police.call("Unable to get hax flags from USERNAME()", user_id=user_id)
+
+        try:
+            pl = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("pl"), True).split("\r\n")
+        except:
+            police.call("Unable to decrypt process list from USERNAME()", user_id=user_id)
+            detected.append("Unable to decrypt process list (Hacked)")
+            eat(user_id, "Missing!", detected, flags)
+            return
+
+        pl = sell(pl)
+
+        #I dont really like chocolate that much >.<
+        for p in pl:
+            for t in p.keys():
+                if p[t] is None:
+                    continue
+                for speed in sugar[t]:
+                    if speed["is_regex"]:
+                        if speed["regex"].search(p[t]):
+                            detected.append(speed)
+                    else:
+                        if speed["value"] == p[t]:
+                            detected.append(speed)
+
+        eat(score, pl, detected, flags)
     except:
-        police.call("Unable to get hax flags from USERNAME()", user_id=score.playerUserID)
-
-    try:
-        pl = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("pl"), True).split("\r\n")
-    except:
-        police.call("Unable to decrypt process list from USERNAME()", user_id=score.playerUserID)
-        detected.append("Unable to decrypt process list (Hacked)")
-        eat(score.playerUserID, "Missing!", detected, flags)
-        return
-
-    pl = sell(pl)
-
-    #I dont really like chocolate that much >.<
-    for p in pl:
-        for t in p.keys():
-            if p[t] is None:
-                continue
-            for speed in sugar[t]:
-                if speed["is_regex"]:
-                    if speed["regex"].search(p[t]):
-                        detected.append(speed)
-                else:
-                    if speed["value"] == p[t]:
-                        detected.append(speed)
-
-    eat(score, pl, detected, flags)
-    #except:
-        #police.call("Oh no! The cake is on fire! Abort!")
+        police.call("Oh no! The cake is on fire! Abort!")
 
 def sell(processes):
     formatted_pl = []
