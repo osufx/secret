@@ -39,7 +39,7 @@ class Fringuellina {
 		// Users plays table
 		echo '<table class="table table-striped table-hover table-50-center">
 		<thead>
-		<tr><th class="text-center"><i class="fa fa-user"></i>	ID</th><th class="text-center">Username</th><th class="text-center">Cakes</th><th class="text-center">Toppings found</th><th class="text-center">Flags found</th><th class="text-center">Allowed</th><th class="text-center">Actions</th></tr>
+		<tr><th class="text-center"><i class="fa fa-user"></i>	ID</th><th class="text-center">Username</th><th class="text-center">Cakes</th><th class="text-center">Toppings found</th><th class="text-center">Flags found</th><th class="text-center">Status</th><th class="text-center">Actions</th></tr>
 		</thead>
 		<tbody>';
 		foreach ($users as $user) {
@@ -55,20 +55,20 @@ class Fringuellina {
 			}
 
 			// Get allowed color/text
-			$allowedColor = "success";
-			$allowedText = "Ok";
+			$statusColor = "success";
+			$statusText = "Ok";
 			if (($user["privileges"] & Privileges::UserPublic) == 0 && ($user["privileges"] & Privileges::UserNormal) == 0) {
 				// Not visible and not active, banned
-				$allowedColor = "danger";
-				$allowedText = "Banned";
+				$statusColor = "danger";
+				$statusText = "Banned";
 			} else if (($user["privileges"] & Privileges::UserPublic) == 0 && ($user["privileges"] & Privileges::UserNormal) > 0) {
 				// Not visible but active, restricted
-				$allowedColor = "warning";
-				$allowedText = "Restricted";
+				$statusColor = "warning";
+				$statusText = "Restricted";
 			} else if (($user["privileges"] & Privileges::UserPublic) > 0 && ($user["privileges"] & Privileges::UserNormal) == 0) {
 				// Visible but not active, disabled (not supported yet)
-				$allowedColor = "default";
-				$allowedText = "Locked";
+				$statusColor = "default";
+				$statusText = "Locked";
             }
             
             $cakes = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ?', [$user["id"]]));
@@ -84,7 +84,7 @@ class Fringuellina {
 			echo '<td><p class="text-center">'.$cakes.'</p></td>';
 			echo '<td><p class="text-center">'.$toppings.'</p></td>';
 			echo '<td><p class="text-center">'.$flags.'</p></td>';
-            echo '<td><p class="text-center"><span class="label label-'.$allowedColor.'">'.$allowedText.'</span></p></td>';
+            echo '<td><p class="text-center"><span class="label label-'.$statusColor.'">'.$statusText.'</span></p></td>';
             echo '<td><p class="text-center"><div class="btn-group">';
 			echo '<a title="Edit user" class="btn btn-xs btn-primary" href="index.php?p=103&id='.$user['id'].'"><span class="glyphicon glyphicon-pencil"></span></a>';
 			if (hasPrivilege(Privileges::AdminBanUsers)) {
