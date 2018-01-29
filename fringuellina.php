@@ -43,17 +43,6 @@ class Fringuellina {
 		</thead>
 		<tbody>';
 		foreach ($users as $user) {
-
-			// Get group color/text
-			$groupColor = "default";
-			$groupText = "None";
-			foreach ($groups as $group) {
-				if ($user["privileges"] == $group["privileges"] || $user["privileges"] == ($group["privileges"] | Privileges::UserDonor)) {
-					$groupColor = $group["color"];
-					$groupText = $group["name"];
-				}
-			}
-
 			// Get allowed color/text
 			$statusColor = "success";
 			$statusText = "Ok";
