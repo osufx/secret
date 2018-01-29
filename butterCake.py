@@ -76,7 +76,7 @@ def bake(submit, score):
                 "tag":"Unable to decrypt process list (Hacked)",
                 "ban": False
                 })
-            eat(user_id, "Missing!", detected, flags)
+            eat(score, {}, detected, flags)
             return
 
         pl = sell(pl)
