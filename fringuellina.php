@@ -142,7 +142,7 @@ class Fringuellina {
 			$statusText = "Locked";
 		}
 
-		$cakes = current($GLOBALS['db']->fetch('SELECT * FROM cakes WHERE userid = ?', [$uid]));
+		$cakes = $GLOBALS['db']->fetchAll('SELECT * FROM cakes WHERE userid = ?', [$uid]);
 
 		$badCakes = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND detected NOT LIKE ?', [$uid, '[]']));
 		$badFlags = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND flags NOT IN (0,4)', [$uid]));
@@ -166,8 +166,8 @@ class Fringuellina {
 			echo '<td><p class="text-center">'.$cake['id'].'</p></td>';
 			echo '<td><p class="text-center">'.$cake['score_id'].'</p></td>';
 			echo '<td><p class="text-center">'.$cake['processes'].'</p></td>';
-			echo '<td><p class="text-center">placeholder</p></td>';
-			echo '<td><p class="text-center">placeholder</p></td>';
+			echo '<td><p class="text-center">'.$cake['detected'].'</p></td>';
+			echo '<td><p class="text-center">'.$cake['flags'].'</p></td>';
 			echo '<td><p class="text-center">placeholder</p></td>';
 			echo '<td><p class="text-center">placeholder</p></td>';
 
