@@ -32,9 +32,8 @@ class Fringuellina {
 		
 		echo '<p align="center"><font size=5><i class="fa fa-birthday-cake"></i>	Cakes</font></p><br>';
 		// Quick edit/silence/kick user button
-		echo '<div><p align="center"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quickLookupUserModal">Quick lookup user (username)</button>';
-		echo '&nbsp;&nbsp; <button type="button" class="btn btn-info" data-toggle="modal" data-target="#quickLookupUseridModal">Quick lookup user (user_id)</button>';
-		echo '&nbsp;&nbsp; <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#quickLookupScoreidModal">Quick lookup user (score_id)</button>';
+		echo '<p align="center"><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quickLookupUserModal">Quick lookup user (username)</button>';
+		echo '&nbsp;&nbsp; <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#quickLookupScoreidModal">Quick lookup cake (score_id)</button>';
 		echo '</p>';
 		// Users plays table
 		echo '<table class="table table-striped table-hover table-50-center">
@@ -95,6 +94,11 @@ class Fringuellina {
 		echo '</tbody></table>';
 		echo '<p align="center"><a href="index.php?p=128&from='.($from-($pageInterval+1)).'">< Previous page</a> | <a href="index.php?p=128&from='.($to).'">Next page ></a></p>';
 		echo '</div>';
+
+
+
+		Fringuellina::PrintLookupUserModule();
+		Fringuellina::PrintLookupCakeModule();
     }
 
     public static function PrintInfoPage(){
@@ -140,6 +144,62 @@ class Fringuellina {
 
     public static function EditCake(){
 
+	}
+
+	public static function PrintLookupUserModule(){
+		echo '<div class="modal fade" id="quickLookupUserModal" tabindex="-1" role="dialog" aria-labelledby="quickLookupUserModal">
+		<div class="modal-dialog">
+		<div class="modal-content">
+		<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<h4 class="modal-title" id="quickLookupUserModal">Quick lookup user</h4>
+		</div>
+		<div class="modal-body">
+		<p>
+		<form id="quick-edit-user-form" action="submit.php" method="POST">
+		<input name="action" value="quickEditUser" hidden>
+		<div class="input-group">
+		<span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
+		<input type="text" name="u" class="form-control" placeholder="Username" aria-describedby="basic-addon1" required>
+		</div>
+		</form>
+		</p>
+		</div>
+		<div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		<button type="submit" form="quick-edit-user-form" class="btn btn-primary">Check</button>
+		</div>
+		</div>
+		</div>
+		</div>';
+	}
+
+	public static function PrintLookupCakeModule(){
+		echo '<div class="modal fade" id="quickLookupScoreidModal" tabindex="-1" role="dialog" aria-labelledby="quickLookupScoreidModal">
+		<div class="modal-dialog">
+		<div class="modal-content">
+		<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		<h4 class="modal-title" id="quickLookupScoreidModal">Quick lookup cake</h4>
+		</div>
+		<div class="modal-body">
+		<p>
+		<form id="quick-edit-user-form" action="submit.php" method="POST">
+		<input name="action" value="quickEditUser" hidden>
+		<div class="input-group">
+		<span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-tag" aria-hidden="true"></span></span>
+		<input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57" name="u" class="form-control" placeholder="Score ID" aria-describedby="basic-addon1" required>
+		</div>
+		</form>
+		</p>
+		</div>
+		<div class="modal-footer">
+		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+		<button type="submit" form="quick-edit-user-form" class="btn btn-primary">Check</button>
+		</div>
+		</div>
+		</div>
+		</div>';
 	}
 }
 ?>
