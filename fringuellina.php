@@ -155,6 +155,25 @@ class Fringuellina {
 		printAdminPanel($statusColor, 'fa fa-id-card fa-5x', $statusText, 'Status');
 		echo '</div>';
 
+		echo '<p align="center"><font size=5><i class="fa fa-birthday-cake"></i>	'.$user['username'].'\'s Cakes</font></p><br>';
+
+		echo '<table class="table table-striped table-hover table-50-center">
+		<thead>
+		<tr><th class="text-center"><i class="fa fa-birthday-cake"></i>	Cake ID</th><th class="text-center">Score ID</th><th class="text-center">Cake ingredients</th><th class="text-center">Cake comment</th><th class="text-center">Flags</th><th class="text-center">Cake rating</th><th class="text-center">Actions</th></tr>
+		</thead>
+		<tbody>';
+		foreach ($cakes as $cake) {
+			echo '<td><p class="text-center">'.$cake['id'].'</p></td>';
+			echo '<td><p class="text-center">'.$cake['score_id'].'</p></td>';
+			echo '<td><p class="text-center">'.$cake['processes'].'</p></td>';
+			echo '<td><p class="text-center">placeholder</p></td>';
+			echo '<td><p class="text-center">placeholder</p></td>';
+			echo '<td><p class="text-center">placeholder</p></td>';
+			echo '<td><p class="text-center">placeholder</p></td>';
+
+			echo '</tr>';
+		}
+		echo '</tbody></table>';
 		echo '</div></div>';
 	}
 
