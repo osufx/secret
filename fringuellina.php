@@ -5,6 +5,12 @@ class Fringuellina {
 	public static $cakeRecipeName = "Cakes"; 
 
     public static function PrintPage(){
+
+		if ($_GET['uid'] && !empty($_GET['uid'])) {
+			Fringuellina::PrintUserCakes();
+			return;
+		}
+
         // Multiple pages
 		$pageInterval = 100;
 		$from = (isset($_GET["from"])) ? $_GET["from"] : 999;
@@ -74,7 +80,7 @@ class Fringuellina {
 			echo '<td><p class="text-center">'.$flags.'</p></td>';
             echo '<td><p class="text-center"><span class="label label-'.$statusColor.'">'.$statusText.'</span></p></td>';
             echo '<td><p class="text-center"><div class="btn-group">';
-			echo '<a title="Edit user" class="btn btn-xs btn-primary" href="index.php?p=128&id='.$user['id'].'"><span class="glyphicon glyphicon-pencil"></span></a>';
+			echo '<a title="Edit user" class="btn btn-xs btn-primary" href="index.php?p=128&uid='.$user['id'].'"><span class="glyphicon glyphicon-pencil"></span></a>';
 			if (hasPrivilege(Privileges::AdminBanUsers)) {
 				if (isBanned($user["id"])) {
 					echo '<a title="Unban user" class="btn btn-xs btn-success" onclick="sure(\'submit.php?action=banUnbanUser&id='.$user['id'].'\')"><span class="glyphicon glyphicon-thumbs-up"></span></a>';
@@ -99,7 +105,25 @@ class Fringuellina {
 
 		Fringuellina::PrintLookupUserModule();
 		Fringuellina::PrintLookupCakeModule();
-    }
+	}
+	
+	public static function PrintUserCakes(){
+		// Print stuff
+		echo '<div id="wrapper">';
+		printAdminSidebar();
+		echo '<div id="page-content-wrapper">';
+		// Maintenance check
+		P::MaintenanceStuff();
+		// Print Success if set
+		if (isset($_GET['s']) && !empty($_GET['s'])) {
+			P::SuccessMessageStaccah($_GET['s']);
+		}
+		// Print Exception if set
+		if (isset($_GET['e']) && !empty($_GET['e'])) {
+			P::ExceptionMessageStaccah($_GET['e']);
+		}
+		echo '</div></div>';
+	}
 
     public static function PrintInfoPage(){
 		
@@ -146,6 +170,7 @@ class Fringuellina {
 
 	}
 
+	//TODO; Make seperate php file to redirect to correct page with custom lookups etc.
 	public static function PrintLookupUserModule(){
 		echo '<div class="modal fade" id="quickLookupUserModal" tabindex="-1" role="dialog" aria-labelledby="quickLookupUserModal">
 		<div class="modal-dialog">
