@@ -2,6 +2,8 @@
 //echo 'Its been a while since ive done php. Let me hide my gun first.';
 
 class Fringuellina {
+	public static $cakeRecipeName = "Cakes"; 
+
     public static function PrintPage(){
         // Multiple pages
 		$pageInterval = 100;
@@ -131,6 +133,6 @@ class Fringuellina {
 
     public static function EditCake(){
 
-    }
+	}
 }
 ?>
