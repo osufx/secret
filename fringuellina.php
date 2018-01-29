@@ -44,7 +44,7 @@ class Fringuellina {
 		// Users plays table
 		echo '<table class="table table-striped table-hover table-50-center">
 		<thead>
-		<tr><th class="text-center"><i class="fa fa-user"></i>	ID</th><th class="text-center">Username</th><th class="text-center">Cakes</th><th class="text-center">Toppings found</th><th class="text-center">Flags found</th><th class="text-center">Status</th><th class="text-center">Actions</th></tr>
+		<tr><th class="text-center"><i class="fa fa-user"></i>	ID</th><th class="text-center">Username</th><th class="text-center">Cakes</th><th class="text-center">Bad cakes</th><th class="text-center">Bad flags</th><th class="text-center">Status</th><th class="text-center">Actions</th></tr>
 		</thead>
 		<tbody>';
 		foreach ($users as $user) {
@@ -67,17 +67,16 @@ class Fringuellina {
             
             $cakes = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ?', [$user["id"]]));
 
-			$toppings = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND detected NOT LIKE ?', [$user["id"], '[]']));
-
-			$flags = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND flags NOT IN (0,4)', [$user["id"]]));
+			$badCakes = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND detected NOT LIKE ?', [$user["id"], '[]']));
+			$badFlags = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND flags NOT IN (0,4)', [$user["id"]]));
 
 			// Print row
 			echo '<tr>';
 			echo '<td><p class="text-center">'.$user['id'].'</p></td>';
 			echo '<td><p class="text-center"><b>'.$user['username'].'</b></p></td>';
 			echo '<td><p class="text-center">'.$cakes.'</p></td>';
-			echo '<td><p class="text-center">'.$toppings.'</p></td>';
-			echo '<td><p class="text-center">'.$flags.'</p></td>';
+			echo '<td><p class="text-center">'.$badCakes.'</p></td>';
+			echo '<td><p class="text-center">'.$badFlags.'</p></td>';
             echo '<td><p class="text-center"><span class="label label-'.$statusColor.'">'.$statusText.'</span></p></td>';
             echo '<td><p class="text-center"><div class="btn-group">';
 			echo '<a title="Edit user" class="btn btn-xs btn-primary" href="index.php?p=128&uid='.$user['id'].'"><span class="glyphicon glyphicon-pencil"></span></a>';
@@ -122,6 +121,40 @@ class Fringuellina {
 		if (isset($_GET['e']) && !empty($_GET['e'])) {
 			P::ExceptionMessageStaccah($_GET['e']);
 		}
+
+		$uid = $_GET['uid'];
+
+		$user = $GLOBALS['db']->fetch('SELECT * FROM users WHERE id = ?', [$uid]);
+
+		$statusColor = "success";
+		$statusText = "Ok";
+		if (($user["privileges"] & Privileges::UserPublic) == 0 && ($user["privileges"] & Privileges::UserNormal) == 0) {
+			// Not visible and not active, banned
+			$statusColor = "danger";
+			$statusText = "Banned";
+		} else if (($user["privileges"] & Privileges::UserPublic) == 0 && ($user["privileges"] & Privileges::UserNormal) > 0) {
+			// Not visible but active, restricted
+			$statusColor = "warning";
+			$statusText = "Restricted";
+		} else if (($user["privileges"] & Privileges::UserPublic) > 0 && ($user["privileges"] & Privileges::UserNormal) == 0) {
+			// Visible but not active, disabled (not supported yet)
+			$statusColor = "default";
+			$statusText = "Locked";
+		}
+
+		$cakes = current($GLOBALS['db']->fetch('SELECT * FROM cakes WHERE userid = ?', [$uid]));
+
+		$badCakes = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND detected NOT LIKE ?', [$uid, '[]']));
+		$badFlags = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND flags NOT IN (0,4)', [$uid]));
+
+
+		echo '<div class="row">';
+		printAdminPanel('primary', 'fa fa-birthday-cake fa-5x', count($cakes), 'Cakes');
+		printAdminPanel('red', 'fa fa-thumbs-down fa-5x', $badCakes, 'Bad cakes');
+		printAdminPanel('yellow', 'fa fa-flag fa-5x', $badFlags, 'Bad flags');
+		printAdminPanel($statusColor, 'fa fa-id-card fa-5x', $statusText, 'Status');
+		echo '</div>';
+
 		echo '</div></div>';
 	}
 
