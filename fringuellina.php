@@ -237,7 +237,10 @@ class Fringuellina {
 
 		echo '<tr>
 		<td>Flags</td>
-		<td><p class="text-center"><input type="text" name="flags" class="form-control" value="'.$flags.'" readonly=""></p></td>
+		<td>
+		<p class="text-center"><input type="number" name="flags" class="form-control" value="'.$cake['flags'].'" readonly=""></p>
+		<p class="text-center"><input type="text" name="flags_string" class="form-control" value="'.$flags.'" readonly=""></p>
+		</td>
 		</tr>';
 		
 		echo '<tr>
@@ -383,7 +386,7 @@ class Fringuellina {
 		return "http://".Fringuellina::getMainDomain()."/b/".$id;
 	}
 
-	const IGNORE = BadFlags::CLEAN | BadFlags::INCORRECT_MOD;
+	const IGNORE_FLAGS = BadFlags::CLEAN | BadFlags::INCORRECT_MOD;
 	public static function makeFlagString($i){
 		$flags = [];
 
@@ -392,7 +395,7 @@ class Fringuellina {
 
 		foreach ($arr as $flag)
 		{
-			if (($i & $flag) != 0)
+			if (($i & $flag) != 0 && ($i & ~Fringuellina::IGNORE_FLAGS))
 				array_push($flags, array_search($flag, $arr));
 		}
 
