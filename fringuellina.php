@@ -6,6 +6,11 @@ class Fringuellina {
 
     public static function PrintPage(){
 
+		if ($_GET['id'] && !empty($_GET['id'])) {
+			Fringuellina::PrintCake();
+			return;
+		}
+
 		if ($_GET['uid'] && !empty($_GET['uid'])) {
 			Fringuellina::PrintUserCakes();
 			return;
@@ -165,7 +170,7 @@ class Fringuellina {
 		foreach ($cakes as $cake) {
 			echo '<td><p class="text-center">'.$cake['id'].'</p></td>';
 			echo '<td><p class="text-center">'.$cake['score_id'].'</p></td>';
-			echo '<td><p class="text-center">'.$cake['processes'].'</p></td>';
+			echo '<td><p class="text-center"><a href="index.php?p=128&id='.$cake['id'].'" type="button" class="btn btn-primary">Check cake</a></p></td>';
 			echo '<td><p class="text-center">'.$cake['detected'].'</p></td>';
 			echo '<td><p class="text-center">'.$cake['flags'].'</p></td>';
 			echo '<td><p class="text-center">placeholder</p></td>';
@@ -174,6 +179,91 @@ class Fringuellina {
 			echo '</tr>';
 		}
 		echo '</tbody></table>';
+		echo '</div></div>';
+	}
+
+	public static function PrintCake(){
+		// Print stuff
+		echo '<div id="wrapper">';
+		printAdminSidebar();
+		echo '<div id="page-content-wrapper">';
+		// Maintenance check
+		P::MaintenanceStuff();
+		// Print Success if set
+		if (isset($_GET['s']) && !empty($_GET['s'])) {
+			P::SuccessMessageStaccah($_GET['s']);
+		}
+		// Print Exception if set
+		if (isset($_GET['e']) && !empty($_GET['e'])) {
+			P::ExceptionMessageStaccah($_GET['e']);
+		}
+
+		$id = $_GET['id'];
+
+		$cake = $GLOBALS['db']->fetch('SELECT * FROM cakes WHERE id = ?', [$id]);
+		$user = $GLOBALS['db']->fetch('SELECT * FROM users WHERE id = ?', [$cake['userid']]);
+
+		$flags = Fringuellina::makeFlagString($cake['flags']);
+
+		$beatmap_md5 = $GLOBALS['db']->fetch('SELECT beatmap_md5 FROM scores WHERE id = ?', [$cake['score_id']])['beatmap_md5'];
+
+		$beatmap = $GLOBALS['db']->fetch('SELECT beatmap_id,beatmapset_id FROM beatmaps WHERE beatmap_md5 = ?', [$beatmap_md5]);
+
+		$pl = json_decode($cake['processes'], true);
+
+		echo '<p align="center"><font size="5"><i class="fa fa-birthday-cake"></i>	Edit cake#'.$id.'</font></p>';
+		echo '<table class="table table-striped table-hover table-center"><tbody>';
+
+		echo '<form id="system-settings-form" action="submit.php" method="POST"></form>';
+
+		echo '<tr>
+		<td width=1>ID</td>
+		<td><p class="text-center"><input type="number" name="id" class="form-control" value="'.$id.'" readonly=""></p></td>
+		</tr>';
+
+		echo '<tr>
+		<td>Username</td>
+		<td><p class="text-center"><input type="text" name="username" class="form-control" value="'.$user['username'].'" readonly=""></p></td>
+		</tr>';
+
+		echo '<tr>
+		<td>Score ID</td>
+		<td><p class="text-center"><input type="number" name="scoreid" class="form-control" value="'.$cake['score_id'].'" readonly=""></p>
+		<div class="text-center">
+			<a href="'.Fringuellina::getBeatmapUrl($beatmap['beatmap_id']).'" type="button" class="btn btn-success">Download Beatmap</a>
+			<a href="http://'.Fringuellina::getMainDomain().'/web/replays/'.$cake['score_id'].'" type="button" class="btn btn-primary">Download Replay</a>
+		</div>
+		</tr>';
+
+		echo '<tr>
+		<td>Flags</td>
+		<td><p class="text-center"><input type="text" name="flags" class="form-control" value="'.$flags.'" readonly=""></p></td>
+		</tr>';
+		
+		echo '<tr>
+		<td>Cake Ingredients</td>
+		<td>';
+
+		echo '<a class="btn btn-success btn-block" data-toggle="collapse" href="#collapsePList" aria-expanded="false" aria-controls="collapsePList">Show</a>';
+
+		echo '<div class="collapse" id="collapsePList">';
+		foreach ($pl as $item){
+			if ($item['hash'] == null && $item['path'] == null && $item['title'] == null)
+				if (in_array($item['file'], ['svchost', 'SearchIndexer', 'chrome', 'smss', 'SearchUI', 'csrss', 'RuntimeBroker', 'spoolsv', 'SettingSyncHost', 'Memory Compression', 'conhost', 'lsass', 'conhost', 'dwm', 'rundll32', 'dllhost', 'Idle']))
+					continue;
+
+			$c = "primary";
+			//Do some check to see if it is type WARNING (flagged)
+
+			echo '<a class="btn btn-block btn-'.$c.'">'.$item['file'].'<br>'.$item['hash'].'<br>'.$item['path'].'<br>'.$item['title'].'<br></a>';
+		}
+		echo '</div>';
+
+		echo '</td>
+		</tr>';
+
+		echo '</tbody></table>';
+
 		echo '</div></div>';
 	}
 
@@ -210,14 +300,16 @@ class Fringuellina {
 		echo '<li><a href="index.php?p=130"><i class="fa fa-book"></i>	Cake recipes</a></li>';
     }
 
+	//submit.php
+	//toggleCake
     public static function ToggleCake(){
 
     }
-
+	//removeCake
 	public static function RemoveCake(){
 
     }
-
+	//saveCake
     public static function EditCake(){
 
 	}
@@ -278,5 +370,52 @@ class Fringuellina {
 		</div>
 		</div>';
 	}
+
+	public static function getMainDomain(){
+		$host_names = explode(".", $_SERVER['SERVER_NAME']);
+		unset($host_names[0]);
+		$main_domain = implode(".", $host_names);
+
+		return $main_domain;
+	}
+
+	public static function getBeatmapUrl($id){
+		return "http://".Fringuellina::getMainDomain()."/b/".$id;
+	}
+
+	const IGNORE = BadFlags::CLEAN | BadFlags::INCORRECT_MOD;
+	public static function makeFlagString($i){
+		$flags = [];
+
+		$ref = new ReflectionClass("BadFlags");
+		$arr = $ref->getConstants();
+
+		foreach ($arr as $flag)
+		{
+			if (($i & $flag) != 0)
+				array_push($flags, array_search($flag, $arr));
+		}
+
+		unset($ref);
+
+		return implode(" | ", $flags);
+	}
+}
+
+class BadFlags{
+	const CLEAN = 0;
+	const SPEED = 1 << 1;
+	const INCORRECT_MOD = 1 << 2;
+	const MULTIPLE_OSU_CLIENTS = 1 << 3;
+	const CHECKSUM_FAIL = 1 << 4;
+	const FLASHLIGHT_CHECKSUM_FAIL = 1 << 5;
+	const OSU_CHECKSUM = 1 << 6;
+	const MISSING_PL = 1 << 7;
+	const FLASHLIGHT_IMAGE = 1 << 8;
+	const SPINNER = 1 << 9;
+	const TRANSPARENT_WINDOW = 1 << 10;
+	const FAST_PRESS = 1 << 11;
+	const RAW_MOUSE_DISCREPANCY = 1 << 12;
+	const RAW_KEYBOARD_DISCREPANCY = 1 << 13;
 }
 ?>
