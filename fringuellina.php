@@ -207,6 +207,10 @@ class Fringuellina {
 
 		$beatmap = $GLOBALS['db']->fetch('SELECT beatmap_id,beatmapset_id FROM beatmaps WHERE beatmap_md5 = ?', [$beatmap_md5]);
 
+		$cakeCommentsList = json_decode($cake['detected'], true);
+
+		$cakeComments = implode("\n", $cakeCommentsList);
+
 		$pl = json_decode($cake['processes'], true);
 
 		echo '<p align="center"><font size="5"><i class="fa fa-birthday-cake"></i>	Edit cake#'.$id.'</font></p>';
@@ -245,6 +249,13 @@ class Fringuellina {
 		<td>
 		<p class="text-center"><input type="number" name="flags" class="form-control" value="'.$cake['flags'].'" readonly=""></p>
 		<p class="text-center"><input type="text" name="flags_string" class="form-control" value="'.$flags.'" readonly=""></p>
+		</td>
+		</tr>';
+
+		echo '<tr>
+		<td>Cake Comments</td>
+		<td>
+		<textarea name="cake_comments" class="form-control" style="overflow: auto; resize: vertical; height: 209px; margin-top: 0px; margin-bottom: 0px;" readonly="">'.$cakeComments.'</textarea>
 		</td>
 		</tr>';
 		
