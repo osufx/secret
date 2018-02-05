@@ -247,7 +247,7 @@ class Fringuellina {
 		echo '<tr>
 		<td>Flags</td>
 		<td>
-		<p class="text-center"><input type="number" name="flags" class="form-control" value="'.$cake['flags'].'" readonly=""></p>
+		<p class="text-center"><input type="number" name="flags" class="form-control" value="'.$cake['flags'].'"></p>
 		<p class="text-center"><input type="text" name="flags_string" class="form-control" value="'.$flags.'" readonly=""></p>
 		</td>
 		</tr>';
@@ -255,7 +255,7 @@ class Fringuellina {
 		echo '<tr>
 		<td>Cake Comments</td>
 		<td>
-		<textarea name="cake_comments" class="form-control" style="overflow: auto; resize: vertical; height: 209px; margin-top: 0px; margin-bottom: 0px;" readonly="">'.$cakeComments.'</textarea>
+		<textarea name="cake_comments" class="form-control" style="overflow: auto; resize: vertical; height: 209px; margin-top: 0px; margin-bottom: 0px;">'.$cakeComments.'</textarea>
 		</td>
 		</tr>';
 		
