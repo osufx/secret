@@ -210,6 +210,13 @@ class Fringuellina {
 		$pl = json_decode($cake['processes'], true);
 
 		echo '<p align="center"><font size="5"><i class="fa fa-birthday-cake"></i>	Edit cake#'.$id.'</font></p>';
+
+		echo '<div class="text-center">
+			<a href="index.php?p=128&uid='.$cake['userid'].'" type="button" class="btn btn-primary col-md-2">Go back</a>
+			<a href="/u/'.$cake['userid'].'" type="button" class="btn btn-info col-md-8">Profile</a>
+			<a href="index.php?p=103&id='.$cake['userid'].'" type="button" class="btn btn-warning col-md-2">Edit User</a>
+		</div>';
+
 		echo '<table class="table table-striped table-hover table-center"><tbody>';
 
 		echo '<form id="system-settings-form" action="submit.php" method="POST"></form>';
