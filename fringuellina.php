@@ -263,9 +263,13 @@ class Fringuellina {
 		<td>Cake Ingredients</td>
 		<td>';
 
-		echo '<a class="btn btn-success btn-block" data-toggle="collapse" href="#collapsePList" aria-expanded="false" aria-controls="collapsePList">Show</a>';
+		echo '<div class="text-center">
+		<a class="btn btn-success" id="collapseVisualB">Show Visual</a>
+		<a class="btn btn-success" id="collapseJsonPB">Show Json Prettified</a>
+		<a class="btn btn-success" id="collapseJsonRB">Show Json Raw</a>';
 
-		echo '<div class="collapse" id="collapsePList">';
+
+		echo '<div class="collapse" id="collapseVisual">';
 		foreach ($pl as $item){
 			if ($item['hash'] == null && $item['path'] == null && $item['title'] == null)
 				if (in_array($item['file'], ['svchost', 'SearchIndexer', 'chrome', 'smss', 'SearchUI', 'csrss', 'RuntimeBroker', 'spoolsv', 'SettingSyncHost', 'Memory Compression', 'conhost', 'lsass', 'conhost', 'dwm', 'rundll32', 'dllhost', 'Idle']))
@@ -276,7 +280,14 @@ class Fringuellina {
 
 			echo '<a class="btn btn-block btn-'.$c.'">'.$item['file'].'<br>'.$item['hash'].'<br>'.$item['path'].'<br>'.$item['title'].'<br></a>';
 		}
-		echo '</div>';
+		echo '</div>
+		<div class="collapse" id="collapseJsonP">
+			<textarea name="jsonP" class="form-control" style="overflow: auto; resize: vertical; height: 800px; margin-top: 0px; margin-bottom: 0px;" readonly="">'.json_encode($pl, JSON_PRETTY_PRINT).'</textarea>
+		</div>
+		<div class="collapse" id="collapseJsonR">
+			<textarea name="jsonR" class="form-control" style="overflow: auto; resize: vertical; height: 800px; margin-top: 0px; margin-bottom: 0px;" readonly="">'.json_encode($pl).'</textarea>
+		</div>
+		</div>';
 
 		echo '</td>
 		</tr>';
@@ -284,6 +295,28 @@ class Fringuellina {
 		echo '</tbody></table>';
 
 		echo '</div></div>';
+
+		echo '<script>
+		document.body.onload = function(){
+			$("#collapseVisualB").click(function(){
+				$("#collapseVisual").collapse("toggle");
+				$("#collapseJsonP").collapse("hide");
+				$("#collapseJsonR").collapse("hide");
+			});
+
+			$("#collapseJsonPB").click(function(){
+				$("#collapseVisual").collapse("hide");
+				$("#collapseJsonP").collapse("toggle");
+				$("#collapseJsonR").collapse("hide");
+			});
+
+			$("#collapseJsonRB").click(function(){
+				$("#collapseVisual").collapse("hide");
+				$("#collapseJsonP").collapse("hide");
+				$("#collapseJsonR").collapse("toggle");
+			});
+		};
+		</script>';
 	}
 
     public static function PrintInfoPage(){
