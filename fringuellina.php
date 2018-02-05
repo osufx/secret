@@ -147,7 +147,21 @@ class Fringuellina {
 			$statusText = "Locked";
 		}
 
-		$cakes = $GLOBALS['db']->fetchAll('SELECT * FROM cakes WHERE userid = ?', [$uid]);
+		$typeOlSelect = 0;
+
+		if (isset($_GET['q']) && !empty($_GET['q'])) {
+			$typeOlSelect = intval($_GET['q']);
+		}
+
+		$query = "SELECT * FROM cakes WHERE userid = ?";
+		if ($typeOlSelect == 1)
+			$query .= " AND detected NOT LIKE '[]'";
+		else if ($typeOlSelect == 2)
+			$query .= " AND flags NOT IN (0,4)";
+		else if ($typeOlSelect == 3)
+			$query .= " AND (detected NOT LIKE '[]' OR flags NOT IN (0,4))";
+
+		$cakes = $GLOBALS['db']->fetchAll($query, [$uid]);
 
 		$badCakes = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND detected NOT LIKE ?', [$uid, '[]']));
 		$badFlags = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND flags NOT IN (0,4)', [$uid]));
