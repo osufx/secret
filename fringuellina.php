@@ -161,6 +161,13 @@ class Fringuellina {
 		else if ($typeOlSelect == 3)
 			$query .= " AND (detected NOT LIKE '[]' OR flags NOT IN (0,4))";
 
+		$order = " ORDER BY id ASC";
+		if (isset($_GET['d'])) {
+			$order = " ORDER BY id DESC";
+		}
+
+		$query .= $order;
+
 		$cakes = $GLOBALS['db']->fetchAll($query, [$uid]);
 
 		$badCakes = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND detected NOT LIKE ?', [$uid, '[]']));
