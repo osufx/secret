@@ -164,17 +164,15 @@ class Fringuellina {
 
 		echo '<table class="table table-striped table-hover table-50-center">
 		<thead>
-		<tr><th class="text-center"><i class="fa fa-birthday-cake"></i>	Cake ID</th><th class="text-center">Score ID</th><th class="text-center">Cake ingredients</th><th class="text-center">Cake comment</th><th class="text-center">Flags</th><th class="text-center">Cake rating</th><th class="text-center">Actions</th></tr>
+		<tr><th class="text-center"><i class="fa fa-birthday-cake"></i>	Cake ID</th><th class="text-center">Score ID</th><th class="text-center">Cake comment</th><th class="text-center">Flags</th><th class="text-center">Actions</th></tr>
 		</thead>
 		<tbody>';
 		foreach ($cakes as $cake) {
 			echo '<td><p class="text-center">'.$cake['id'].'</p></td>';
 			echo '<td><p class="text-center">'.$cake['score_id'].'</p></td>';
-			echo '<td><p class="text-center"><a href="index.php?p=128&id='.$cake['id'].'" type="button" class="btn btn-primary">Check cake</a></p></td>';
 			echo '<td><p class="text-center">'.$cake['detected'].'</p></td>';
 			echo '<td><p class="text-center">'.$cake['flags'].'</p></td>';
-			echo '<td><p class="text-center">placeholder</p></td>';
-			echo '<td><p class="text-center">placeholder</p></td>';
+			echo '<td><p class="text-center"><a href="index.php?p=128&id='.$cake['id'].'" type="button" class="btn btn-primary">Check cake</a></p></td>';
 
 			echo '</tr>';
 		}
