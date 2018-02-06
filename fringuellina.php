@@ -222,7 +222,7 @@ class Fringuellina {
 			echo '<td><p class="text-center">'.$cake['score_id'].'</p></td>';
 			echo '<td><p class="text-center">'.$cake['detected'].'</p></td>';
 			echo '<td><p class="text-center">'.$cake['flags'].'</p></td>';
-			echo '<td><p class="text-center"><a href="index.php?p=128&id='.$cake['id'].'" type="button" class="btn btn-primary">Check cake</a></p></td>';
+			echo '<td><p class="text-center"><a href="index.php?p=129&id='.$cake['id'].'" type="button" class="btn btn-primary">Check cake</a></p></td>';
 
 			echo '</tr>';
 		}
@@ -243,7 +243,7 @@ class Fringuellina {
 		</script>';
 	}
 
-	public static function PrintCake(){
+	public static function PrintInfoPage(){
 		// Print stuff
 		echo '<div id="wrapper">';
 		printAdminSidebar();
@@ -397,10 +397,6 @@ class Fringuellina {
 		};
 		</script>';
 	}
-
-    public static function PrintInfoPage(){
-		
-    }
 
     public static function PrintCakesSummary(){
 		// Print stuff
