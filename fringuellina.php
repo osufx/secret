@@ -168,6 +168,13 @@ class Fringuellina {
 
 		$query .= $order;
 
+		$page = 0;
+		if (isset($_GET['p']) && !empty($_GET['p'])){
+			$page = intval($_GET['p']);
+		}
+
+		$query .= " LIMIT ".$page.", 100";
+
 		$cakes = $GLOBALS['db']->fetchAll($query, [$uid]);
 
 		$badCakes = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND detected NOT LIKE ?', [$uid, '[]']));
