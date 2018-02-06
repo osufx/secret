@@ -189,17 +189,24 @@ class Fringuellina {
 		}
 
 		$btn = [1, 2];
+		$btncss = ["box-shadow: 0 0 40px #0000ff !important;","",""];
 
-		if ($typeOlSelect == 1)
+		if ($typeOlSelect == 1){
 			$btn = [0, 3];
-		else if($typeOlSelect == 2)
+			$btncss = ["", "box-shadow: 0 0 40px #ff0000 !important;", ""];
+		}
+		else if($typeOlSelect == 2){
 			$btn = [3, 0];
-		else if ($typeOlSelect == 3)
+			$btncss = ["", "", "box-shadow: 0 0 40px #ffff00 !important;"];
+		}
+		else if ($typeOlSelect == 3){
 			$btn = [2, 1];
+			$btncss = ["", "box-shadow: 0 0 40px #ff0000 !important;", "box-shadow: 0 0 40px #ffff00 !important;"];
+		}
 
-		printAdminPanel('primary" onclick=\'window.location.href="'.$hrefpage.'&q=0";\'', 'fa fa-birthday-cake fa-5x', $cakeCount, 'Cakes');
-		printAdminPanel('red" onclick=\'window.location.href="'.$hrefpage.'&q='.$btn[0].'";\'', 'fa fa-thumbs-down fa-5x', $badCakes, 'Bad cakes');
-		printAdminPanel('yellow" onclick=\'window.location.href="'.$hrefpage.'&q='.$btn[1].'";\'', 'fa fa-flag fa-5x', $badFlags, 'Bad flags');
+		printAdminPanel('primary" onclick=\'window.location.href="'.$hrefpage.'&q=0";\'" style="cursor:pointer;'.$btncss[0], 'fa fa-birthday-cake fa-5x', $cakeCount, 'Cakes');
+		printAdminPanel('red" onclick=\'window.location.href="'.$hrefpage.'&q='.$btn[0].'";\'" style="cursor:pointer;'.$btncss[1], 'fa fa-thumbs-down fa-5x', $badCakes, 'Bad cakes');
+		printAdminPanel('yellow" onclick=\'window.location.href="'.$hrefpage.'&q='.$btn[1].'";\'" style="cursor:pointer;'.$btncss[2], 'fa fa-flag fa-5x', $badFlags, 'Bad flags');
 		printAdminPanel($statusColor, 'fa fa-id-card fa-5x', $statusText, 'Status');
 		echo '</div>';
 
