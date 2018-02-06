@@ -289,7 +289,6 @@ class Fringuellina {
 		<a class="btn btn-success" id="collapseJsonPB">Show Json Prettified</a>
 		<a class="btn btn-success" id="collapseJsonRB">Show Json Raw</a>';
 
-
 		echo '<div class="collapse" id="collapseVisual">';
 		foreach ($pl as $item){
 			if ($item['hash'] == null && $item['path'] == null && $item['title'] == null)
@@ -300,7 +299,7 @@ class Fringuellina {
 			//Do some check to see if it is type WARNING (flagged)
 			foreach ($eggs as $egg){
 				if ($egg["is_regex"]){
-					if (preg_match($egg["value"], $item[$egg["type"]])){
+					if (preg_match('/'.$egg["value"].'/', $item[$egg["type"]])){
 						if ($egg["ban"])
 							$c = "danger";
 						else
