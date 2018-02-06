@@ -182,9 +182,24 @@ class Fringuellina {
 		$badFlags = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND flags NOT IN (0,4)', [$uid]));
 
 		echo '<div class="row">';
-		printAdminPanel('primary', 'fa fa-birthday-cake fa-5x', $cakeCount, 'Cakes');
-		printAdminPanel('red', 'fa fa-thumbs-down fa-5x', $badCakes, 'Bad cakes');
-		printAdminPanel('yellow', 'fa fa-flag fa-5x', $badFlags, 'Bad flags');
+		$hrefpage = "index.php?p=128";
+		foreach ($_GET as $key => $value){
+			if ($key != "q")
+				$hrefpage .= "&".$key."=".$value;
+		}
+
+		$btn = [1, 2];
+
+		if ($typeOlSelect == 1)
+			$btn = [0, 3];
+		else if($typeOlSelect == 2)
+			$btn = [3, 0];
+		else if ($typeOlSelect == 3)
+			$btn = [2, 1];
+
+		printAdminPanel('primary" onclick=\'window.location.href="'.$hrefpage.'&q=0";\'', 'fa fa-birthday-cake fa-5x', $cakeCount, 'Cakes');
+		printAdminPanel('red" onclick=\'window.location.href="'.$hrefpage.'&q='.$btn[0].'";\'', 'fa fa-thumbs-down fa-5x', $badCakes, 'Bad cakes');
+		printAdminPanel('yellow" onclick=\'window.location.href="'.$hrefpage.'&q='.$btn[1].'";\'', 'fa fa-flag fa-5x', $badFlags, 'Bad flags');
 		printAdminPanel($statusColor, 'fa fa-id-card fa-5x', $statusText, 'Status');
 		echo '</div>';
 
@@ -215,6 +230,10 @@ class Fringuellina {
 		echo '<p align="center"><a href="'.$hrefpage.'&l='.max($page-100, 0).'">< Previous page</a> | <a href="'.$hrefpage.'&l='.min($page+100, $cakeCount-100).'">Next page ></a></p>';
 
 		echo '</div></div>';
+
+		echo '<script>
+		
+		</script>';
 	}
 
 	public static function PrintCake(){
