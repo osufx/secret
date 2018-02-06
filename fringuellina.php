@@ -169,19 +169,20 @@ class Fringuellina {
 		$query .= $order;
 
 		$page = 0;
-		if (isset($_GET['p']) && !empty($_GET['p'])){
-			$page = intval($_GET['p']);
+		if (isset($_GET['l']) && !empty($_GET['l'])){
+			$page = intval($_GET['l']);
 		}
 
 		$query .= " LIMIT ".$page.", 100";
 
 		$cakes = $GLOBALS['db']->fetchAll($query, [$uid]);
 
+		$cakeCount = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ?', [$uid]));
 		$badCakes = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND detected NOT LIKE ?', [$uid, '[]']));
 		$badFlags = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND flags NOT IN (0,4)', [$uid]));
 
 		echo '<div class="row">';
-		printAdminPanel('primary', 'fa fa-birthday-cake fa-5x', count($cakes), 'Cakes');
+		printAdminPanel('primary', 'fa fa-birthday-cake fa-5x', $cakeCount, 'Cakes');
 		printAdminPanel('red', 'fa fa-thumbs-down fa-5x', $badCakes, 'Bad cakes');
 		printAdminPanel('yellow', 'fa fa-flag fa-5x', $badFlags, 'Bad flags');
 		printAdminPanel($statusColor, 'fa fa-id-card fa-5x', $statusText, 'Status');
@@ -204,6 +205,15 @@ class Fringuellina {
 			echo '</tr>';
 		}
 		echo '</tbody></table>';
+
+		$hrefpage = "index.php?p=128";
+		foreach ($_GET as $key => $value){
+			if ($key != "l")
+				$hrefpage .= "&".$key."=".$value;
+		}
+
+		echo '<p align="center"><a href="'.$hrefpage.'&l='.max($page-100, 0).'">< Previous page</a> | <a href="'.$hrefpage.'&l='.min($page+100, $cakeCount-100).'">Next page ></a></p>';
+
 		echo '</div></div>';
 	}
 
