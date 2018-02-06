@@ -173,7 +173,6 @@ class Fringuellina {
 		$badCakes = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND detected NOT LIKE ?', [$uid, '[]']));
 		$badFlags = current($GLOBALS['db']->fetch('SELECT COUNT(*) FROM cakes WHERE userid = ? AND flags NOT IN (0,4)', [$uid]));
 
-
 		echo '<div class="row">';
 		printAdminPanel('primary', 'fa fa-birthday-cake fa-5x', count($cakes), 'Cakes');
 		printAdminPanel('red', 'fa fa-thumbs-down fa-5x', $badCakes, 'Bad cakes');
@@ -220,6 +219,7 @@ class Fringuellina {
 		$id = $_GET['id'];
 
 		$cake = $GLOBALS['db']->fetch('SELECT * FROM cakes WHERE id = ?', [$id]);
+		$eggs = $GLOBALS['db']->fetchAll('SELECT * FROM eggs');
 		$user = $GLOBALS['db']->fetch('SELECT * FROM users WHERE id = ?', [$cake['userid']]);
 
 		$flags = Fringuellina::makeFlagString($cake['flags']);
@@ -298,6 +298,22 @@ class Fringuellina {
 
 			$c = "primary";
 			//Do some check to see if it is type WARNING (flagged)
+			foreach ($eggs as $egg){
+				if ($egg["is_regex"]){
+					if (preg_match($egg["value"], $item[$egg["type"]])){
+						if ($egg["ban"])
+							$c = "danger";
+						else
+							$c = "warning";
+					}		
+				}
+				else if ($egg["value"] == $item[$egg["type"]]){
+					if ($egg["ban"])
+						$c = "danger";
+					else
+						$c = "warning";
+				}
+			}
 
 			echo '<a class="btn btn-block btn-'.$c.'">'.$item['file'].'<br>'.$item['hash'].'<br>'.$item['path'].'<br>'.$item['title'].'<br></a>';
 		}
