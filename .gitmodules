@@ -1,0 +1,3 @@
+[submodule "achievements"]
+	path = achievements
+	url = https://zxq.co/Sunpy/national-gallery.git
