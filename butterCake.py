@@ -7,8 +7,6 @@ from common.ripple import userUtils
 from . import ice_coffee
 from . import police
 
-IGNORE_HAX_FLAGS = ice_coffee.INCORRECT_MOD
-
 #Cornflakes is nice when 90% is sugar
 sugar = {
     "hash": [],
@@ -62,9 +60,9 @@ def bake(submit, score):
 
         try:
             flags = score_data[17].count(' ')
-            has_hax_flags = flags & ~IGNORE_HAX_FLAGS
+            has_hax_flags = flags & ~ice_coffee.IGNORE_HAX_FLAGS
             if has_hax_flags != 0:
-                police.call("USERNAME() uploaded a score with {} flags.".format(flags), user_id=user_id)
+                police.call("USERNAME() uploaded a score with ({}) -> ({}) flags.".format(flags, make_flags_string(flags)), user_id=user_id)
         except:
             police.call("Unable to get hax flags from USERNAME()", user_id=user_id)
 
@@ -151,3 +149,13 @@ def eat(score, processes, detected, flags):
             police.call("USERNAME() was flagged with {}".format(reason), user_id=score.playerUserID)
 
     glob.db.execute("INSERT INTO cakes(id, userid, score_id, processes, detected, flags) VALUES (NULL,%s,%s,%s,%s,%s)", [score.playerUserID, score.scoreID, json.dumps(processes), json.dumps(tag_list), flags])
+
+def make_flags_string(i):
+    s = []
+    flags = [e for e in ice_coffee.Flags]
+
+    for flag in flags:
+        if i & flag.value and i & ~ice_coffee.IGNORE_HAX_FLAGS:
+            s.append(flag.name)
+    
+    return " | ".join(s)
