@@ -138,6 +138,8 @@ def eat(score, processes, detected, flags):
 
     hax_flags = flags & ~ice_coffee.IGNORE_HAX_FLAGS
     beatmap_id = get_beatmap_id(score.fileMd5)["beatmap_id"]
+    
+    username = userUtils.getUsername(score.playerUserID)
 
     fields = [
         {
@@ -156,8 +158,6 @@ def eat(score, processes, detected, flags):
         reason = " & ".join(tag_list)
         if len(reason) > 86:
             reason = "reasons..."
-
-        username = userUtils.getUsername(score.playerUserID)
 
         extra_data = ""
         if hax_flags != 0:
