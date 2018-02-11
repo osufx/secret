@@ -28,13 +28,16 @@ def init_eggs():
                 continue
             sugar[egg["type"]].append(egg)
 
+    compile_regex()
+
+    initialized_eggs = True
+
+def compile_regex():
     #Cache regex searches
     for carbohydrates in sugar:
         for speed in sugar[carbohydrates]:
             if speed["is_regex"]:
                 speed["regex"] = re.compile(speed["value"])
-
-    initialized_eggs = True
 
 #Since this is still being worked on everything is in a try catch
 def bake(submit, score):
@@ -86,9 +89,11 @@ def bake(submit, score):
                         continue
 
                     if speed["is_regex"]:
-                        #print("p.t: {}\nt: {}\nspeed: {}\n".format(p[t], t, speed))
+                        if "regex" not in speed: #Some weird bug where it unsets itself
+                            speed["regex"] = re.compile(speed["value"])
+
                         if speed["regex"].search(p[t]) is not None:
-                            detected.append(speed)
+                                detected.append(speed)
                     else:
                         if speed["value"] == p[t]:
                             detected.append(speed)
