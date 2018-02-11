@@ -244,6 +244,16 @@ class Fringuellina {
 	}
 
 	public static function PrintInfoPage(){
+		//Redirect scoreID to the cakeID
+		if ($_GET['sid'] && !empty($_GET['sid'])) {
+			$cakeID = $GLOBALS['db']->fetch('SELECT id FROM cakes WHERE score_id = ?', [$_GET['sid']])["id"];
+			if ($cakeID != null)
+				header('Location: index.php?p=129&id='.$cakeID);
+			else
+				header('Location: index.php?p=128');
+			exit();
+		}
+
 		// Print stuff
 		echo '<div id="wrapper">';
 		printAdminSidebar();
