@@ -1,5 +1,6 @@
 import json
 import re
+import traceback
 from helpers import aeshelper
 from objects import glob
 from common.ripple import userUtils
@@ -93,6 +94,7 @@ def bake(submit, score):
 
         eat(score, pl, detected, flags)
     except:
+        police.call(traceback.format_exc(), discord_m=True)
         police.call("Oh no! The cake is on fire! Abort!")
 
 def sell(processes):

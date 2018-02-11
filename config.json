@@ -4,11 +4,11 @@
         "url": ""
     },
     "urls": {
-        "main_domain": "osu.ppy.sh"
+        "main_domain": ""
     },
     "images": {
         "bad_cake_ban": "http://i.osufx.com/images/png/ZZlHy.png",
-        "bad_cake": "http://i.osufx.com/images/png/fWWwA.png",
+        "bad_cake": "http://i.osufx.com/images/png/ZZlHy.png",
         "bad_flag": "http://i.osufx.com/images/png/IWazD.png"
     }
 }

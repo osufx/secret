@@ -27,9 +27,7 @@ def call(m, *args, user_id = None, discord_m = False, embed_args = None):
                             )
             else:
                 embed = Webhook(flavours.config["webhook"]["url"], 
-                                msg=m,
-                                footer="Caker by Sunpy @osufx",
-                                footer_icon="http://i.imgur.com/NCYspz8.png"
+                                msg=m
                             )
 
             embed.post()
