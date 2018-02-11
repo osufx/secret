@@ -6,7 +6,9 @@ from common.ripple import userUtils
 
 from . import flavours
 
-def call(m, *args, user_id = None):
+from .discord_hooks import Webhook
+
+def call(m, *args, user_id = None, discord_m = False, embed_args = None):
     try:
         if flavours.config is None:
             cache_config()
@@ -16,17 +18,21 @@ def call(m, *args, user_id = None):
             username = userUtils.getUsername(user_id)
             m = m.replace("USERNAME()", username)
 
-        if flavours.config["webhook"]["enable"]:
-            data = {"text": m}
-            response = requests.post(
-                flavours.config["webhook"]["url"],
-                json=data
-            )
-            if response.status_code != 200:
-                raise ValueError(
-                'Request to slack returned an error %s, the response is:\n%s'
-                % (response.status_code, response.text)
-            )
+        if flavours.config["webhook"]["enable"] and discord_m:
+            if embed_args is not None:
+                embed = Webhook(flavours.config["webhook"]["url"], 
+                                **embed_args,
+                                footer="Caker by Sunpy @osufx",
+                                footer_icon="http://i.imgur.com/NCYspz8.png"
+                            )
+            else:
+                embed = Webhook(flavours.config["webhook"]["url"], 
+                                msg=m,
+                                footer="Caker by Sunpy @osufx",
+                                footer_icon="http://i.imgur.com/NCYspz8.png"
+                            )
+
+            embed.post()
     except Exception as e:
         s_print("Unable to call police; {}".format(str(e)))
     

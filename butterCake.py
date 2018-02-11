@@ -4,6 +4,7 @@ from helpers import aeshelper
 from objects import glob
 from common.ripple import userUtils
 
+from . import flavours
 from . import ice_coffee
 from . import police
 
@@ -58,13 +59,7 @@ def bake(submit, score):
         if restricted == True or user_id == 0: #We dont care about this since this person is already taken care off
             return
 
-        try:
-            flags = score_data[17].count(' ')
-            has_hax_flags = flags & ~ice_coffee.IGNORE_HAX_FLAGS
-            if has_hax_flags != 0:
-                police.call("USERNAME() uploaded a score with ({}) -> ({}) flags.".format(flags, make_flags_string(flags)), user_id=user_id)
-        except:
-            police.call("Unable to get hax flags from USERNAME()", user_id=user_id)
+        flags = score_data[17].count(' ')
 
         try:
             pl = aeshelper.decryptRinjdael(aeskey, iv, submit.get_argument("pl"), True).split("\r\n")
@@ -128,6 +123,9 @@ def sell(processes):
     return formatted_pl
 
 def eat(score, processes, detected, flags):
+    if flavours.config is None:
+        police.cache_config()
+
     do_restrict = False
     for toppings in detected:
         if toppings["ban"]:
@@ -135,18 +133,81 @@ def eat(score, processes, detected, flags):
 
     tag_list = [x["tag"] for x in detected]
 
+    hax_flags = flags & ~ice_coffee.IGNORE_HAX_FLAGS
+    beatmap_id = get_beatmap_id(score.fileMd5)["beatmap_id"]
+
+    fields = [
+        {
+            "name": "BeatmapID: {}".format(beatmap_id),
+            "value": "[Download Beatmap](http://{}/b/{})".format(flavours.config["urls"]["main_domain"], beatmap_id),
+            "inline": True
+        },
+        {
+            "name": "ScoreID: {}".format(score.scoreID),
+            "value": "[Download Replay](http://{}/web/replays/{})".format(flavours.config["urls"]["main_domain"], score.scoreID),
+            "inline": True
+        }
+    ]
+
     if len(detected) > 0:
         reason = " & ".join(tag_list)
         if len(reason) > 86:
             reason = "reasons..."
 
+        username = userUtils.getUsername(score.playerUserID)
+
+        extra_data = ""
+        if hax_flags != 0:
+            extra_data = "\nHad bad flags: ({}) -> ({})".format(flags, make_flags_string(flags))
+
         if do_restrict:
             userUtils.restrict(score.playerUserID)
             userUtils.appendNotes(score.playerUserID, "Restricted due to {}".format(reason))
-            police.call("USERNAME() was restricted due to {}".format(reason), user_id=score.playerUserID)
+            police.call("{} was restricted for: {} {}".format(username, reason, extra_data), 
+                discord_m=True,
+                embed_args={
+                        "color": 0xd9534f,
+                        "title": "Bad cake detected",
+                        "title_url": "http://old.{}/index.php?p=129&sid={}".format(flavours.config["urls"]["main_domain"], score.scoreID),
+                        "desc": "Restricted for: {} {}".format(reason, extra_data),
+                        "author": username,
+                        "author_icon": "http://a.{}/{}".format(flavours.config["urls"]["main_domain"], score.playerUserID),
+                        "author_url": "http://{}/u/{}".format(flavours.config["urls"]["main_domain"], score.playerUserID),
+                        "thumbnail": flavours.config["images"]["bad_cake_ban"],
+                        "fields": fields
+                    }
+                )
         else:
             userUtils.appendNotes(score.playerUserID, reason)
-            police.call("USERNAME() was flagged with {}".format(reason), user_id=score.playerUserID)
+            police.call("{} submitted bad cake: {} {}".format(username, reason, extra_data), 
+                discord_m=True,
+                embed_args={
+                        "color": 0xf0ad4e,
+                        "title": "Bad cake detected",
+                        "title_url": "http://old.{}/index.php?p=129&sid={}".format(flavours.config["urls"]["main_domain"], score.scoreID),
+                        "desc": "Had bad cake: {} {}".format(reason, extra_data),
+                        "author": username,
+                        "author_icon": "http://a.{}/{}".format(flavours.config["urls"]["main_domain"], score.playerUserID),
+                        "author_url": "http://{}/u/{}".format(flavours.config["urls"]["main_domain"], score.playerUserID),
+                        "thumbnail": flavours.config["images"]["bad_cake"],
+                        "fields": fields
+                    }
+                )
+    elif hax_flags != 0:
+        police.call("{} submitted bad flags: ({}) -> ({})".format(username, flags, make_flags_string(flags)),
+            discord_m=True, 
+            embed_args={
+                    "color": 0xf0ad4e,
+                    "title": "Bad flags detected",
+                    "title_url": "http://old.{}/index.php?p=129&sid={}".format(flavours.config["urls"]["main_domain"], score.scoreID),
+                    "desc": "({}) -> ({})".format(flags, make_flags_string(flags)),
+                    "author": username,
+                    "author_icon": "http://a.{}/{}".format(flavours.config["urls"]["main_domain"], score.playerUserID),
+                    "author_url": "http://{}/u/{}".format(flavours.config["urls"]["main_domain"], score.playerUserID),
+                    "thumbnail": flavours.config["images"]["bad_flag"],
+                    "fields": fields
+                }
+            )
 
     glob.db.execute("INSERT INTO cakes(id, userid, score_id, processes, detected, flags) VALUES (NULL,%s,%s,%s,%s,%s)", [score.playerUserID, score.scoreID, json.dumps(processes), json.dumps(tag_list), flags])
 
@@ -158,4 +219,8 @@ def make_flags_string(i):
         if i & flag.value and i & ~ice_coffee.IGNORE_HAX_FLAGS:
             s.append(flag.name)
     
-    return " | ".join(s)
+    return ", ".join(s)
+
+def get_beatmap_id(hash):
+    query = "SELECT beatmap_id,beatmapset_id FROM beatmaps WHERE beatmap_md5 = %s"
+    return glob.db.fetch(query, [hash])
