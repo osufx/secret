@@ -437,20 +437,6 @@ class Fringuellina {
 		echo '<li><a href="index.php?p=130"><i class="fa fa-book"></i>	Cake recipes</a></li>';
     }
 
-	//submit.php
-	//toggleCake
-    public static function ToggleCake(){
-
-    }
-	//removeCake
-	public static function RemoveCake(){
-
-    }
-	//saveCake
-    public static function EditCake(){
-
-	}
-
 	//TODO; Make seperate php file to redirect to correct page with custom lookups etc.
 	public static function PrintLookupUserModule(){
 		echo '<div class="modal fade" id="quickLookupUserModal" tabindex="-1" role="dialog" aria-labelledby="quickLookupUserModal">
@@ -462,18 +448,19 @@ class Fringuellina {
 		</div>
 		<div class="modal-body">
 		<p>
-		<form id="quick-edit-user-form" action="submit.php" method="POST">
-		<input name="action" value="quickEditUser" hidden>
+		<form id="quick-lookup-user-id" action="submit.php" method="POST">
+		<input name="action" value="toggleCake" hidden>
+		<input name="extra_action" value="quickLookupUser" hidden>
 		<div class="input-group">
 		<span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-user" aria-hidden="true"></span></span>
-		<input type="text" name="u" class="form-control" placeholder="Username" aria-describedby="basic-addon1" required>
+		<input type="text" name="data" class="form-control" placeholder="Username" aria-describedby="basic-addon1" required>
 		</div>
 		</form>
 		</p>
 		</div>
 		<div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		<button type="submit" form="quick-edit-user-form" class="btn btn-primary">Check</button>
+		<button type="submit" form="quick-lookup-user-id" class="btn btn-primary">Check</button>
 		</div>
 		</div>
 		</div>
@@ -490,18 +477,19 @@ class Fringuellina {
 		</div>
 		<div class="modal-body">
 		<p>
-		<form id="quick-edit-user-form" action="submit.php" method="POST">
-		<input name="action" value="quickEditUser" hidden>
+		<form id="quick-lookup-score-id" action="submit.php" method="POST">
+		<input name="action" value="toggleCake" hidden>
+		<input name="extra_action" value="quickLookupScoreid" hidden>
 		<div class="input-group">
 		<span class="input-group-addon" id="basic-addon1"><span class="glyphicon glyphicon-tag" aria-hidden="true"></span></span>
-		<input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57" name="u" class="form-control" placeholder="Score ID" aria-describedby="basic-addon1" required>
+		<input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57" name="data" class="form-control" placeholder="Score ID" aria-describedby="basic-addon1" required>
 		</div>
 		</form>
 		</p>
 		</div>
 		<div class="modal-footer">
 		<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-		<button type="submit" form="quick-edit-user-form" class="btn btn-primary">Check</button>
+		<button type="submit" form="quick-lookup-score-id" class="btn btn-primary">Check</button>
 		</div>
 		</div>
 		</div>
@@ -536,6 +524,68 @@ class Fringuellina {
 		unset($ref);
 
 		return implode(" | ", $flags);
+	}
+
+	//submit.php
+	//toggleCake
+	//I am using this for some extended stuff
+	public static function toggleCake(){
+		if (isset($_POST['extra_action']) && !empty($_POST['extra_action'])) {
+			$action = $_POST['extra_action'];
+		} elseif (isset($_GET['extra_action']) && !empty($_GET['extra_action'])) {
+			$action = $_GET['extra_action'];
+		} else {
+			Fringuellina::actualToggleCake();
+			die();
+		}
+
+		try{
+			if (isset($_POST['data']) && !empty($_POST['data'])) {
+				$data = $_POST['data'];
+			} elseif (isset($_GET['data']) && !empty($_GET['data'])) {
+				$data = $_GET['data'];
+			} else {
+				throw new Exception("Couldn't find data parameter");
+			}
+
+			switch($action){
+				case "quickLookupUser":
+					Fringuellina::QuickLookupUser();
+					break;
+				case "quickLookupScoreid":
+					Fringuellina::QuickLookupScoreid();
+					break;
+			}
+		}
+		catch(Exception $e) {
+			// Redirect to Exception page
+			redirect('index.php?p=99&e='.$e->getMessage());
+		}
+	}
+
+	public static function actualToggleCake(){
+
+	}
+
+	public static function QuickLookupUser(){
+		$uid = current($GLOBALS['db']->fetch('SELECT id FROM users WHERE username = ?', [$_POST['data']]));
+		header('Location: /index.php?p=128&uid='.$uid);
+		exit();
+	}
+
+	public static function QuickLookupScoreid(){
+		$id = current($GLOBALS['db']->fetch('SELECT id FROM cakes WHERE score_id = ?', [$_POST['data']]));
+		header('Location: /index.php?p=129&id='.$id);
+		exit();
+	}
+
+	//removeCake
+	public static function RemoveCake(){
+
+    }
+	//saveCake
+    public static function EditCake(){
+
 	}
 }
 
