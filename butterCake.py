@@ -86,7 +86,7 @@ def bake(submit, score):
                         continue
 
                     if speed["is_regex"]:
-                        print("p.t: {}\nt: {}\nspeed: {}\n".format(p[t], t, speed))
+                        #print("p.t: {}\nt: {}\nspeed: {}\n".format(p[t], t, speed))
                         if speed["regex"].search(p[t]) is not None:
                             detected.append(speed)
                     else:
