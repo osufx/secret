@@ -45,6 +45,9 @@ def bake(submit, score):
         if not initialized_eggs:
             init_eggs()
         
+        if not score.passed:
+            return
+        
         detected = []
         flags = 0
 
